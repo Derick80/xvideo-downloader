@@ -15,6 +15,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script defer data-domain="xdownloader.fly.dev" src="https://plausible.io/js/script.js"></script>
+
       </head>
       <body
         className='bg-slate-900 text-white p-4 max-w-xl mx-auto'
