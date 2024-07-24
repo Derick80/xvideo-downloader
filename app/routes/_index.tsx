@@ -132,7 +132,7 @@ export default function Index () {
           </div>
         );
       }) }
-      <footer className="fixed bottom-0 text-sm text-gray-500 mt-60">
+      <footer className="text-sm text-gray-500 mt-60">
         <ul
           className="flex justify-around  gap-2">
 
