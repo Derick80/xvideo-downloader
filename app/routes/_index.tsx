@@ -1,7 +1,6 @@
 import type { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Form, json,  Outlet, useActionData, useNavigation } from '@remix-run/react';
+import { Form, json, useActionData, useNavigation } from '@remix-run/react';
 import React from 'react';
-
 export const meta: MetaFunction = () => {
   return [
     { title: "mp4 Downloader" },
@@ -18,8 +17,6 @@ export async function action ({ request }: ActionFunctionArgs) {
 
   const videoId = videoUrl.split('/').pop()?.split('.')[0].replace(/\s/g, '').replace(/\//g, '').slice(0, 20);
 
-  console.log("video stuff from action", videoId, videoUrl);
-
   try {
     // Fetch the video
     const response = await fetch(videoUrl, {
@@ -35,7 +32,6 @@ export async function action ({ request }: ActionFunctionArgs) {
     const text = await response.text();
 
     const mp4Urls = extractMp4Urls(text);
-    console.log("mp4Urls", mp4Urls);
 
     return json({ mp4Urls, videoId });
   } catch (error) {
@@ -44,12 +40,12 @@ export async function action ({ request }: ActionFunctionArgs) {
 }
 
 export default function Index () {
-   const actionData = useActionData<{ mp4Urls: string[] , videoId:string,error?:Error}>();
-   const [videoId, setVideoId] = React.useState<string | null>(null);
+  const actionData = useActionData<{ mp4Urls: string[], videoId: string, error?: Error }>();
+  const [videoId, setVideoId] = React.useState<string | null>(null);
 
   const navigation = useNavigation();
 
-React.useEffect(() => {
+  React.useEffect(() => {
     if (actionData?.videoId) {
       setVideoId(actionData.videoId);
     }
@@ -80,7 +76,7 @@ React.useEffect(() => {
 
   return (
     <div className="flex flex-col gap-5 font-sans p-4">
-      <h1 className="text-2xl font-bold">Welcome to xHamsterdownloader!</h1>
+      <h1 className="text-2xl font-bold">Welcome to xHamster downloader!</h1>
       <p>
         Copy the video URL from xHamster and paste it in the input field to download the video.
       </p>
@@ -96,72 +92,88 @@ React.useEffect(() => {
           required
           autoComplete='on'
           placeholder='enter the video URL'
-        className=
+          className=
           "flex h-12 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         />
-        {videoId ? <p className="text-sm text-gray-500">Video ID: {videoId}</p>:        <p className="text-sm text-gray-500">Please ensure the video URL is correct</p>
-}
+        { videoId ? <p className="text-sm text-gray-500">Video ID: { videoId }</p> : <p className="text-sm text-gray-500">Please ensure the video URL is correct</p>
+        }
         <button
           type='submit'
-          disabled={navigation.state === 'submitting'}
+          disabled={ navigation.state === 'submitting' }
           className='bg-blue-500 text-white ph-9 px-4 py-2 rounded-md'
         >
           Submit Video URL
         </button>
       </Form>
-{actionData?.mp4Urls?.map((url: string, index: number) => {
-              return (
-                <div
-                  key={ index }
-                  className="flex flex-col gap-2"
-                >
-
-                    <a
-              href={url}
-              onClick={(e) => handleDownload(e, url)}
+      { actionData?.mp4Urls?.map((url: string, index: number) => {
+        return (
+          <div
+            key={ index }
+            className="flex flex-col gap-2"
+          >
+            <a
+              href={ url }
+              onClick={ (e) => handleDownload(e, url) }
               className="bg-blue-500 text-white ph-9 px-4 py-2 rounded-md"
             >
-              Download {videoId}.mp4
+              Download { videoId }.mp4
             </a>
-                  <video
-                    controls
-                    width="320%"
-                    height="240"
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
-                  >
-                    <source src={url} type="video/mp4" />
-                  </video>
+            <video
+              controls
+              width="320%"
+              height="240"
+              loop
+              muted
+              playsInline
+              preload="auto"
+            >
+              <source src={ url } type="video/mp4" />
+            </video>
+          </div>
+        );
+      }) }
+      <footer className="fixed bottom-0 text-sm text-gray-500 mt-60">
+        <ul
+          className="flex justify-around  gap-2">
 
+          <li>
+            <a
+              href="https://github.com/Derick80/xvideo-downloader"
+              referrerPolicy='no-referrer'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+             <svg xmlns="http://www.w3.org/2000/svg" width={24} height={24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-brand-github">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+           </a>
+          </li>
+             <li>© 2021</li>
+        </ul>
+        <p
+          className='italic text-sm mt-4'>
+          Open to collaborate or improve the project. Considering adding more features to the project such as downloading videos from other websites, downloading multiple file sizes and resolutions and perhaps evening adding a login system with a database for the user to store the record (Video urls) of the downloaded videos.
+          </p>
+      </footer>
 
-
-               </div>
-              );
-              })}
-      <footer className="text-sm text-gray-500">
-        GitHub and Links
-                  </footer>
-
-      <Outlet />
-      {actionData?.error && (
-        <p className="text-red-500">{actionData.error?.toString()}</p>
-      )}
+      { actionData?.error && (
+        <p className="text-red-500">{ actionData.error?.toString() }</p>
+      ) }
     </div>
   );
 }
 
-  function extractMp4Urls (text: string) {
-    const mp4Urls = [];
-    const regex = /https?:\/\/[^\s]+(?<!\.t)\.mp4/g;
-    let match;
-    while ((match = regex.exec(text)) !== null) {
-      mp4Urls.push(match[0]);
-    }
-    const singleUrl = [...new Set(mp4Urls)].filter(url => !url.includes('_TPL_.av1')).map(callbackfn => callbackfn.replace(/\\/g, ''));
-
-    return singleUrl;
-
+function extractMp4Urls (text: string) {
+  const mp4Urls = [];
+  const regex = /https?:\/\/[^\s]+(?<!\.t)\.mp4/g;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    mp4Urls.push(match[0]);
   }
+  const singleUrl = [...new Set(mp4Urls)].filter(url => !url.includes('_TPL_.av1')).map(callbackfn => callbackfn.replace(/\\/g, ''));
+
+  return singleUrl;
+
+}
 
